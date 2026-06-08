@@ -16,3 +16,11 @@ RULES:
 5. Write in past tense. Be direct. No filler phrases like "it is worth noting".
 6. Length: 3-5 sentences per section. Concise is better than comprehensive.
 """
+
+OVERVIEW_PROMPT = """
+{facts_context}
+
+Write the Overview section of the experiment report.
+Cover: what was trained, for how long, and the headline result.
+Do not mention recommendations yet.
+"""
