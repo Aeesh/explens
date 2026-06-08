@@ -24,3 +24,11 @@ Write the Overview section of the experiment report.
 Cover: what was trained, for how long, and the headline result.
 Do not mention recommendations yet.
 """
+
+TRAINING_DYNAMICS_PROMPT = """
+{facts_context}
+
+Write the Training Dynamics section.
+Cover: how loss evolved, whether training was stable, whether the model
+converged and when. Mention specific epoch numbers and loss values from the facts.
+"""
