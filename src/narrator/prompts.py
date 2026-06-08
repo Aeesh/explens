@@ -32,3 +32,12 @@ Write the Training Dynamics section.
 Cover: how loss evolved, whether training was stable, whether the model
 converged and when. Mention specific epoch numbers and loss values from the facts.
 """
+
+GENERALISATION_PROMPT = """
+{facts_context}
+
+Write the Generalisation section.
+Cover: how validation metrics compare to training metrics, whether
+overfitting occurred, and how severe it was.
+Only include this section if validation metrics are available.
+"""
