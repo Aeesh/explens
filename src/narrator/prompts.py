@@ -53,3 +53,14 @@ Give 2-4 specific, actionable recommendations based on the patterns above.
 Each recommendation should reference specific hyperparameter values or
 techniques. Prioritise critical issues first.
 """
+
+WHAT_NEXT_PROMPT = """
+{facts_context}
+
+DETECTED PATTERNS:
+{patterns}
+
+Given these results, what are the 3 most important experiments to run next?
+Be specific — mention hyperparameter ranges, techniques, or ablations.
+Format as a numbered list.
+"""
