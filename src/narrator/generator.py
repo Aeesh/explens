@@ -89,3 +89,11 @@ class ExperimentNarrator:
                 )
 
         return result
+
+    def _generate_section(self, prompt: str) -> str:
+        try:
+            response = self._llm.generate(prompt, system=NARRATOR_SYSTEM)
+            return response.text.strip()
+        except Exception as e:
+            logger.error(f"Generation failed: {e}")
+            return f"[Generation failed: {e}]"
