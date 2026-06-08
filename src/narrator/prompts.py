@@ -41,3 +41,15 @@ Cover: how validation metrics compare to training metrics, whether
 overfitting occurred, and how severe it was.
 Only include this section if validation metrics are available.
 """
+
+RECOMMENDATIONS_PROMPT = """
+{facts_context}
+
+DETECTED PATTERNS:
+{patterns}
+
+Write the Recommendations section.
+Give 2-4 specific, actionable recommendations based on the patterns above.
+Each recommendation should reference specific hyperparameter values or
+techniques. Prioritise critical issues first.
+"""
