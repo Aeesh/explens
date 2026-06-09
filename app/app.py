@@ -56,3 +56,32 @@ with tab1:
                 st.stop()
 
         _run_analysis(run)
+
+with tab2:
+    uploaded = st.file_uploader("Upload training log (CSV or JSON)")
+    run_name = st.text_input("Run name:", placeholder="my_experiment")
+    generate_local = st.button("Generate Report", key="local_btn",
+                               type="primary")
+
+    if generate_local and uploaded:
+        import tempfile, os
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=os.path.splitext(uploaded.name)[1]
+        ) as f:
+            f.write(uploaded.read())
+            tmp_path = f.name
+
+        with st.spinner("Loading..."):
+            try:
+                if uploaded.name.endswith(".csv"):
+                    from src.connectors.local_connector import load_from_csv
+                    run = load_from_csv(tmp_path, run_name=run_name or "local_run")
+                else:
+                    from src.connectors.local_connector import load_from_json
+                    run = load_from_json(tmp_path)
+                st.success(f"Loaded: {run.run_name}")
+            except Exception as e:
+                st.error(f"Failed to load file: {e}")
+                st.stop()
+
+        _run_analysis(run)
