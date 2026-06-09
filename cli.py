@@ -53,3 +53,46 @@ def main():
         from src.connectors.local_connector import load_from_json
         run = load_from_json(args.json)
 
+    # Extract facts
+    if args.verbose:
+        print(f"Extracted facts for: {run.run_name}")
+
+    from src.analysis.extractor import extract_facts
+    facts = extract_facts(run)
+
+    if args.verbose:
+        print(f"Detected {len(facts.facts)} measurable facts")
+        print(f"Patterns: {[p.title for p in __import__('src.analysis.patterns', fromlist=['detect_patterns']).detect_patterns(facts)]}")
+
+    # Generate narrative
+    if args.verbose:
+        print("Generating narrative...")
+
+    from src.narrator.generator import ExperimentNarrator
+    narrator = ExperimentNarrator()
+    result = narrator.generate(facts)
+
+    # Report consistency
+    if not args.no_check:
+        failed = result.failed_checks()
+        if failed:
+            print(f"\n⚠️  {len(failed)} consistency issue(s) detected:")
+            for section, check in failed:
+                print(f"  [{section}] Claimed: {check.claim_text}")
+                print(f"  Actual: {check.actual_value}")
+        else:
+            if args.verbose:
+                print("✓ All claims consistent with data")
+
+    # Build report
+    output_dir = os.path.join(args.output, run.run_name.replace("/", "_"))
+    from src.report.builder import build_report
+    report_path = build_report(result, output_dir)
+
+    print(f"\nReport saved to: {report_path}")
+    if run.url:
+        print(f"WandB run: {run.url}")
+
+
+if __name__ == "__main__":
+    main()
