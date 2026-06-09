@@ -95,3 +95,46 @@ def build_report(result: NarratorResult, output_dir: str) -> str:
     if result.generalisation:
         gen_section = f"## Generalisation\n\n{result.generalisation}\n\n---\n\n"
 
+    # Patterns
+    if result.patterns:
+        pattern_lines = []
+        for p in result.patterns:
+            icon = {"critical": "🔴", "warning": "🟡", "info": "🟢"}.get(p.severity, "•")
+            pattern_lines.append(f"### {icon} {p.title}\n{p.description}")
+        patterns_str = "\n\n".join(pattern_lines)
+    else:
+        patterns_str = "No significant patterns detected."
+
+    # Consistency section
+    if result.overall_consistent():
+        consistency_str = "✅ All verifiable claims in this report are consistent with measured data."
+    else:
+        failed = result.failed_checks()
+        lines = [f"⚠️ {len(failed)} claim(s) flagged for inconsistency:\n"]
+        for section, check in failed:
+            lines.append(
+                f"- **{section}**: Claimed \"{check.claim_text}\" "
+                f"but actual value is: {check.actual_value}"
+            )
+        consistency_str = "\n".join(lines)
+
+    report = REPORT_TEMPLATE.format(
+        run_name=run.run_name,
+        timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        overview=result.overview,
+        config_table=config_rows,
+        loss_curves_path=os.path.relpath(loss_curves_path, output_dir),
+        lr_chart_section=lr_section,
+        training_dynamics=result.training_dynamics,
+        generalisation_section=gen_section,
+        patterns_section=patterns_str,
+        recommendations=result.recommendations,
+        what_next=result.what_next,
+        consistency_section=consistency_str,
+    )
+
+    report_path = os.path.join(output_dir, "report.md")
+    with open(report_path, "w") as f:
+        f.write(report)
+
+    return report_path
