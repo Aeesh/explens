@@ -59,3 +59,27 @@ def plot_loss_curves(run: RunData, output_dir: str) -> str:
     plt.savefig(path, dpi=150, bbox_inches="tight")
     plt.close()
     return path
+
+
+def plot_learning_rate(run: RunData, output_dir: str) -> str | None:
+    """Plot learning rate schedule if available."""
+    lr_key = next(
+        (m for m in run.metric_names
+         if "lr" in m.lower() or "learning_rate" in m.lower()), None
+    )
+    if not lr_key:
+        return None
+
+    fig, ax = plt.subplots(figsize=(8, 3))
+    series = run.get_metric_series(lr_key)
+    ax.plot(series.values, color=COLORS["lr"], linewidth=2)
+    ax.set_title("Learning Rate Schedule", fontsize=13, fontweight="bold")
+    ax.set_xlabel("Step")
+    ax.set_ylabel("Learning Rate")
+    ax.set_yscale("log")
+    plt.tight_layout()
+
+    path = os.path.join(output_dir, "learning_rate.png")
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+    return path
