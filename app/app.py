@@ -28,3 +28,31 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("[💻 GitHub](https://github.com/aeesh/explens)")
 
+st.title("ExpLens — ML Experiment Report Generator")
+st.markdown(
+    "Generate a structured, factually verified narrative from your "
+    "training run. Paste a WandB run path or upload a log file."
+)
+
+tab1, tab2 = st.tabs(["WandB Run", "Upload Log File"])
+
+with tab1:
+    run_path = st.text_input(
+        "WandB run path:",
+        placeholder="entity/project/run_id",
+        help="Find this in your WandB dashboard URL"
+    )
+    generate_wandb = st.button("Generate Report", key="wandb_btn",
+                               type="primary")
+
+    if generate_wandb and run_path.strip():
+        with st.spinner("Loading run data..."):
+            try:
+                from src.connectors.wandb_connector import load_run
+                run = load_run(run_path.strip())
+                st.success(f"Loaded: {run.run_name} ({run.n_steps} steps)")
+            except Exception as e:
+                st.error(f"Failed to load run: {e}")
+                st.stop()
+
+        _run_analysis(run)
